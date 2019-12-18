@@ -10,7 +10,7 @@ To use, navigate to 'Minecraft_Texture_Resizer/src/main/Main.java'. You may choo
 This program is provided with a Javadoc in-line. Each element/variable that may be modified by the user has a corresponding piece of text for a description.
 
 ## Contributing
-Feel free to copy this code and modify it in any way of your choosing. Should you choose to resubmit this code or any portions thereof, please be sure to include *this LICENSE document.*
+Feel free to copy this code and modify it in any way of your choosing. Should you choose to resubmit this code or any portions thereof, please be sure to include the *LICENSE* document.
 
 ## DISCLAIMER
 All files and folders inside of "Default" (in src/resources/Default) were created by, and are property of: Mojang AB.
