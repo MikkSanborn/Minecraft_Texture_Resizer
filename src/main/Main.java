@@ -52,7 +52,7 @@ public class Main {
 	 * <p><strong>NOTE:</strong> Larger numbers run slower and may cause crashes.</p>
 	 */
 	@ShortRangeDefaultValue(value = 16, minimum = 1, maximum = 32767)
-	public static final short size = 4;
+	public static final short size = 16;
 	
 	/**
 	 * The {@code useScale} variable determines if the resizing program should resize images by scale.
