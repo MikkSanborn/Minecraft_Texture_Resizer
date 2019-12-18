@@ -52,7 +52,7 @@ public class Main {
 	 * <p><strong>NOTE:</strong> Larger numbers run slower and may cause crashes.</p>
 	 */
 	@ShortRangeDefaultValue(value = 16, minimum = 1, maximum = 32767)
-	public static final short size = 7;
+	public static final short size = 4;
 	
 	/**
 	 * The {@code useScale} variable determines if the resizing program should resize images by scale.
@@ -60,7 +60,7 @@ public class Main {
 	 * <p>If {@code useScale = false}, images will be resized to {@code (}{@link #size}{@code , }{@link #size}{@code )}.</p>
 	 */
 	@BooleanDefaultValue(true)
-	public static final boolean useScale = false;
+	public static final boolean useScale = true;
 	
 	/**
 	 * The {@code block} variable determines if images in {@code pack/assets/minecraft/textures/block} should be resized.
@@ -139,7 +139,7 @@ public class Main {
 	 * </p>
 	 */
 	@BooleanDefaultValue(true)
-	public static final boolean item = false;
+	public static final boolean item = true;
 	
 	/**
 	 * The {@code map} variable determines if images in {@code pack/assets/minecraft/textures/map} should be resized.
@@ -317,7 +317,7 @@ public class Main {
 		
 		// Get the file from the root, in this case, (pack)
 		source_files.add(new File(loc + "/src/resources/" + pack));
-		System.out.println(loc);
+		System.out.println(loc + "/src/resources/" + pack);
 		
 		// Recursively get all images into imgs_in (BufferedImage format)
 		for (int i = 0; i < source_files.size(); i++) { // For each file in (source_files),
@@ -408,24 +408,26 @@ public class Main {
 					System.out.println("Removed particle."); // Inform the user
 					continue; // Skip every other "if" statement; this has already been removed. Skip to the next iteration of the loop.
 				}
+
 				appendFileArrayToArrayList(source_files.remove(i).listFiles(), source_files); // Move contents from this directory into (source_files)
 				i--; // Go back one step to account for list shortening
 				continue; // Skip to the next iteration of the loop.
 			} else { // if source_files.get(i) is NOT a directory (i.e. it's a file)
 		        try { // Prepare to catch an error when trying to
-					BufferedImage img = ImageIO.read(source_files.get(i));
+					BufferedImage img = ImageIO.read(source_files.get(i)); // read this file as an image
 					if (img != null) { // If this is indeed an image,
 						imgs_in.add(img); // Add this file to (imgs_in), as a BufferedImage type. (Create a BufferedImage from f, and add it to the list)
 						imgs_loc.add(source_files.get(i).getAbsolutePath()); // Make sure to add the location of the image in the corresponding location in (imgs_loc)
 					} else { // If this is not an image
 						unused_files.add(source_files.get(i)); // This file is not an image, keep it for later
-						source_files.remove(i); // Get rid of this file
+						source_files.get(i); // Get rid of this file
 					}
 					source_files.remove(i); // Get rid of this file from (source_files)
 					i--; // Go back one step to account for list shortening
 					continue; // Skip to the next iteration of the loop.
 				} catch (IOException e) { // In case there was either an (IOException)
 					e.printStackTrace();
+					i--;
 				}
 			}
 		}
@@ -461,10 +463,14 @@ public class Main {
 		for (int i = 0; i < unused_files.size(); i++) {
 			File f = unused_files.get(i);
 			if (f.getAbsolutePath().endsWith(".png.mcmeta")) {
-				BufferedReader r = new BufferedReader(new FileReader(f));
-				String[] out = new String[(int) r.lines().count()];
-				for (int j = 0; j < out.length; j++) {
-					out[j] = r.readLine();
+				BufferedReader r = new BufferedReader(new FileReader(f)); // Make a (BufferdReader) that makes reading text from files easier
+				
+				ArrayList<String> content = new ArrayList<String>(); // Make a place to store the input text
+				
+				String s = r.readLine(); // Store the first line
+				while (s != null) { // While there is actually text,
+					content.add(s); // Add it to the list of current lines
+					s = r.readLine(); // then get the next line
 				}
 				
 				r.close(); // Done reading it, close it.
@@ -477,8 +483,8 @@ public class Main {
 		        
 				BufferedWriter outputWriter = new BufferedWriter(new FileWriter(outputfile)); // Create a text file writer (BufferedWriter)
 				
-				for (int j = 0; j < out.length; j++) { // For each (String) in (content)
-					outputWriter.write(out[j] + "\r\n"); // Write this (String) to [pack.mcmeta]
+				for (int j = 0; j < content.size(); j++) { // For each (String) in (content)
+					outputWriter.write(content.get(j)); // Write this (String) to [pack.mcmeta]
 				}
 				
 				// Done with the (BufferedWriter), close it.
@@ -487,6 +493,8 @@ public class Main {
 				
 				unused_files.remove(i);
 				i--;
+				
+				// COPY IT
 				
 				System.out.printf("%.2f", 100.0*(count-unused_files.size())/count); // Inform the user what percentage of images have been resized
 		        System.out.println("% : " + f.getAbsolutePath().substring(f.getAbsolutePath().replace("\\\\", "/").lastIndexOf(pack)+pack.length()).replace("\\\\", "/")); // Inform the user which file has just been created
